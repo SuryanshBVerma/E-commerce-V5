@@ -1,0 +1,189 @@
+@if (openBillModal) {
+<div class="fixed inset-0 z-50 overflow-y-auto">
+    <!-- Blurred background -->
+    <div class="fixed inset-0 bg-black/35 bg-opacity-30 backdrop-blur-sm" (click)="openBillModal = false"></div>
+
+    <!-- Centered bill component -->
+    <div class="flex items-center justify-center h-screen p-4">
+        <div class="relative rounded-lg shadow-xl">
+            <!-- Bill content -->
+            <app-bill [order]="orderBill" [customerDetails]="customerDetails"></app-bill>
+        </div>
+    </div>
+</div>
+}
+<app-navbar></app-navbar>
+<section class="bg-white py-8 sm:py-12">
+    <div class="container mx-auto max-w-6xl px-4">
+        <!-- Page Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Your Order History 📦</h1>
+            <p class="mt-2 text-gray-600">Review your previous purchases and order details</p>
+        </div>
+
+        <!-- Shimmer UI for Loading State -->
+        @if (isLoading) {
+        <div class="p-4">
+            <!-- Search and Sort Controls Skeleton -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 animate-pulse">
+                <!-- Search Box Skeleton -->
+                <div class="relative w-full sm:w-64 h-11 bg-gray-200 rounded-lg"></div>
+
+                <!-- Sort Button Skeleton -->
+                <div class="w-32 h-10 bg-gray-200 rounded-lg"></div>
+            </div>
+
+            <!-- Order Cards Skeleton -->
+            @for (i of [1,2,3]; track $index) {
+            <div class="border border-gray-200 rounded-lg p-4 mb-6 shadow-sm">
+                <!-- Order Header Skeleton -->
+                <div class="flex flex-col sm:flex-row justify-between mb-4 pb-4 border-b border-gray-100">
+                    <div class="space-y-2">
+                        <div class="h-6 w-32 bg-gray-200 rounded"></div>
+                        <div class="h-4 w-48 bg-gray-200 rounded"></div>
+                    </div>
+                    <div class="mt-2 sm:mt-0 flex items-center gap-2">
+                        <div class="h-6 w-20 bg-gray-200 rounded-full"></div>
+                        <div class="h-5 w-5 bg-gray-200 rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Order Footer Skeleton -->
+                <div
+                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100">
+                    <div class="h-5 w-32 bg-gray-200 rounded"></div>
+                    <div class="mt-3 sm:mt-0 flex gap-3">
+                        <div class="h-9 w-24 bg-gray-200 rounded-lg"></div>
+                        <div class="h-9 w-24 bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        }
+        @else {
+        <!-- Empty State -->
+        @if (orders.length === 0) {
+        <div class="flex flex-col items-center py-2">
+            <img src="https://img.freepik.com/free-vector/detective-following-footprints-concept-illustration_114360-17638.jpg?t=st=1744804068~exp=1744807668~hmac=c9775b43acb3d3215a657f561bbf263be5ea14607ad7ab0380b55b63eb61ab93&w=900"
+                alt="No orders found" class="h-87 w-87 object-contain mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">No Orders Found</h3>
+            <p class="text-gray-600 mb-6">You haven't placed any orders yet</p>
+            <button [routerLink]="['/products']"
+                class="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">
+                Start Shopping
+            </button>
+        </div>
+        } @else {
+        <!-- Add these controls at the top of your orders list -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <!-- Search Box -->
+            <div class="relative w-full sm:w-64">
+                <input type="text" [(ngModel)]="searchQuery" (input)="searchOrders()"
+                    placeholder="Search by product name..."
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-0 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <!-- Sort Button -->
+            <button (click)="toggleSortDirection()"
+                class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>Sort by Date</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        [attr.d]="sortDirection === 'asc' ? 'M19 9l-7 7-7-7' : 'M5 15l7-7 7 7'" />
+                </svg>
+            </button>
+        </div>
+        }
+
+        <!-- Orders List -->
+        @for (order of filteredOrders; track order.orderId) {
+        <div class="border border-gray-200 rounded-lg p-4 mb-6 shadow-sm hover:shadow-md transition-shadow">
+            <!-- Order Header -->
+            <div class="flex flex-col sm:flex-row justify-between mb-4 pb-4 border-b border-gray-100">
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-900">Order #{{order.orderId}}</h3>
+                        <p class="text-sm text-gray-500">Placed on {{order.createdAt| date:'mediumDate'}}</p>
+                    </div>
+
+                    <div>
+                        @for (item of order.items.slice(0, 3); track item.productId) {
+                        <div class="">
+                            <p class="text-sm text-gray-500">{{ item.productName}} x {{item.quantity}}</p>
+                        </div>
+                        }
+
+                    </div>
+                </div>
+                <div class="mt-2 sm:mt-0 flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium" [ngClass]="{
+                            'bg-green-100 text-green-800': order.status === 'DELIVERED',
+                            'bg-yellow-100 text-yellow-800': order.status === 'PROCESSING',
+                            'bg-blue-100 text-blue-800': order.status === 'SHIPPED',
+                            'bg-purple-100 text-purple-800': order.status === 'PLACED'
+                        }">
+                        {{order.status}}
+                    </span>
+                    <button (click)="toggleOrderExpansion(order.orderId)"
+                        class="p-1 text-gray-500 hover:text-gray-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                [attr.d]="isExpanded(order.orderId) ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Items Preview -->
+            <div class="overflow-hidden transition-all duration-300" [class.max-h-0]="!isExpanded(order.orderId)"
+                [class.max-h-[500px]]="isExpanded(order.orderId)">
+                <div class="grid grid-cols-2 gap-4 mb-4 sm:grid-cols-4 p-2">
+                    @for (item of order.items.slice(0, 3); track item.productId) {
+                    <div class="relative">
+                        <img [src]="item.productImageUrl" [alt]="item.productName"
+                            class="aspect-square object-cover rounded border border-gray-200">
+                        @if (item.quantity > 1) {
+                        <span
+                            class="absolute -top-2 -right-2 bg-gray-800 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                            {{item.quantity}}
+                        </span>
+                        }
+                    </div>
+                    }
+                    @if (order.items.length > 3) {
+                    <div class="flex items-center justify-center bg-gray-50 rounded border border-gray-200">
+                        <span class="text-gray-500 font-medium">+{{order.items.length - 3}} more</span>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Footer -->
+            <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100">
+                <div>
+                    <p class="text-sm text-gray-600">Total: <span
+                            class="font-bold text-gray-900">₹{{order.totalAmount | number : '1.2-2'}}</span></p>
+                </div>
+                <div class="mt-3 sm:mt-0 space-x-3">
+                    <button (click)="viewOrderDetails(order.orderId)"
+                        class="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Download Invoice
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+        }
+    </div>
+
+</section>

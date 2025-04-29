@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+</head>
+
+<body class="bg-white font-sans">
+
+    <app-navbar></app-navbar>
+
+    <!-- SHIMMER UI COMPONENT -->
+    @if (isLoading) {
+    <div class="container mx-auto max-w-6xl px-4 py-8 mt-5">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Cart Items Section - Skeleton -->
+            <div class="w-full lg:w-2/3">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
+                    <div class="h-6 w-24 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+
+                <!-- Repeat skeleton items 3-4 times -->
+                @for (item of [1,2,3]; track $index) {
+                <div class="border-t border-gray-200">
+                    <div class="py-6 flex items-center border-b border-gray-200">
+                        <!-- Image placeholder -->
+                        <div class="w-20 h-20 bg-gray-200 rounded animate-pulse mr-4"></div>
+
+                        <!-- Description placeholder -->
+                        <div class="flex-grow space-y-2">
+                            <div class="h-5 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-4 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+
+                        <!-- Controls placeholder -->
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+                                <div class="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+                            </div>
+
+                            <div class="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
+
+                            <div class="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- Order Summary Section - Skeleton -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="h-7 w-32 bg-gray-200 rounded animate-pulse mb-6"></div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <div class="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <div class="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <div class="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 flex justify-between">
+                            <div class="h-5 w-16 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-5 w-20 bg-gray-200 rounded animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 space-y-4">
+                        <div class="w-full h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                        <div class="w-full h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }@else {
+    
+    <div class="container mx-auto max-w-6xl px-4 py-8 mt-5">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Cart Items Section -->
+            <div class="w-full lg:w-2/3">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">Your Cart</h1>
+                    <p class="text-gray-600">{{items.length}} Items in cart</p>
+                </div>
+
+                @if (items.length == 0) {
+                <div class="flex flex-col justify-center items-center">
+                    <img src="https://static.vecteezy.com/system/resources/previews/016/073/190/non_2x/ecommerce-shopping-trolly-flat-concept-design-free-vector.jpg"
+                        height="400" width="400" class="" />
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No Items Found</h3>
+                    <p class="text-gray-600 mb-6">You haven't added to your cart yet</p>
+
+                    <button [routerLink]="['/products']" routerLinkActive="router-link-active"
+                        class="w-full bg-white text-black py-3 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer">
+                        Start Shopping
+                    </button>
+
+                </div>
+                }
+
+                @for (item of items; track $index) {
+                <div class="border-t border-gray-200">
+                    <!-- Item 1 -->
+                    <div class="py-6 flex items-center border-b border-gray-200">
+                        <div class="w-20 h-20 bg-gray-100 rounded flex items-center justify-center mr-4">
+                            <img src="{{item.imageUrl}}" alt="Product Img" class="max-h-16 max-w-16 object-contain" />
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-lg">{{item.name}}</h3>
+                            <p class="text-xs text-gray-400">{{item.description}}</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+
+                            @if (item.currentStock == 0) {
+
+                                <div class="flex items-center space-x-3">
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Out Of Stock
+                                    </span>
+                                </div>
+
+                            }@else {
+                                 <!-- Quantity Controls -->
+                                <div class="flex items-center space-x-3">
+                                    <button (click)="decreaseQuantity(item)"
+                                        class="p-1 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none"
+                                        [disabled]="item.quantity <= 1" [class.opacity-50]="item.quantity <= 1"
+                                        [class.cursor-not-allowed]="item.quantity <= 1">
+                                        <lucide-angular [name]="minus" class="w-4 h-4"></lucide-angular>
+                                    </button>
+    
+                                    <span class="text-sm font-medium w-6 text-center">{{item.quantity}}</span>
+    
+                                    <button (click)="increaseQuantity(item)"
+                                        class="p-1 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none">
+                                        <lucide-angular [name]="plus" class="w-4 h-4"></lucide-angular>
+                                    </button>
+                                </div>
+                             }
+                            
+
+                            <div class="text-right w-24 font-bold ">₹{{item.price * item.quantity | number:'1.2-2'}}</div>
+
+                            <button (click)="removeItem(item)" class="text-gray-400 hover:text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                }
+
+
+            </div>
+
+            <!-- Order Summary Section -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h2 class="text-xl font-bold mb-6">Order Summary</h2>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal ({{items.length}} items)</span>
+                            <span class="font-medium">₹{{ (items | orderTotal).subtotal}}</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tax ({{ taxRate * 100 }}%)</span>
+                            <span class="font-medium">₹{{ (items | orderTotal:taxRate).tax }}</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Shipping</span>
+                            <span class="font-medium">₹{{ (items | orderTotal:taxRate).shipping}}</span>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 flex justify-between">
+                            <span class="font-bold text-lg">Total</span>
+                            <span class="font-bold text-lg">₹{{ (items | orderTotal:taxRate).total}}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 space-y-4">
+                        <button 
+                            [disabled]="items.length < 1 || hasInvalidItems()"
+                            (click)="initiatePayment()"
+                            class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-900 transition-colors cursor-pointer disabled:bg-gray-500">
+                            Confirm payment
+                        </button>
+
+                        @if (items.length > 0) {
+                        <button [routerLink]="['/products']" routerLinkActive="router-link-active"
+                            class="w-full bg-white text-black py-3 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer">
+                            Continue Shopping
+                        </button>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-payment-successful [showModal]="paymentSuccessFul"></app-payment-successful>
+    <app-payment-failure [showModal]= "paymentFailure"></app-payment-failure>
+    }
+
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<edit-user-modal [isOpen]="openModal" [user]="userToBeEdited" (modalClose)="editUser(null)" (save)="saveUser($event)"
+  [isSaving]="savingUser"></edit-user-modal>
+
+
+<app-delete-user [user]="selectedUserForDeletion" [isOpen]="showDeleteModal" [isDeleting]="isDeletingUser"
+  (deleteConfirmed)="onDeleteConfirmed($event)" (modalClose)="closeDeleteModal()">
+</app-delete-user>
+
+
+
+<div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">All users</h1>
+
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <!-- Search Bar -->
+    <div class="relative w-full sm:w-64 lg:w-96">
+      <input type="text" [(ngModel)]="searchTerm" (input)="searchUsers()" placeholder="Search for users"
+        class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    </div>
+  </div>
+
+  @if(isLoading){
+  <!-- SHIMMER UI -->
+  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Location
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last
+            Seen
+          </th>
+          <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        @for (item of [1,2,3,4,5]; track $index) {
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
+              <div class="ml-4 w-full">
+                <div class="h-4 bg-gray-200 rounded-full animate-pulse w-3/4 mb-2"></div>
+                <div class="h-3 bg-gray-200 rounded-full animate-pulse w-1/2"></div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="h-4 bg-gray-200 rounded-full animate-pulse w-1/2"></div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="h-6 bg-gray-200 rounded-full animate-pulse w-16 mx-auto"></div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex justify-center gap-2">
+              <div class="h-8 bg-gray-200 rounded-md animate-pulse w-16"></div>
+              <div class="h-8 bg-gray-200 rounded-md animate-pulse w-16"></div>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }@else {
+
+
+
+  <!-- Users Table - now using displayedUsers -->
+  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Location</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last
+            Seen</th>
+          <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        @for (user of usersToDisplay; track $index) {
+        <!-- Your existing user row template -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-gray-200">
+                <lucide-angular [name]="userIcon" class="w-6 h-6"></lucide-angular>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{user.name}}</div>
+                <div class="text-sm text-gray-500">{{user.email}}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{user.location}}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+              {{user.updatedAt| date:'shortTime'}}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+            <div class="flex justify-center gap-2">
+              <button (click)="editUser(user)"
+                class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">
+                <lucide-angular [name]="userPen" class="w-4 h-4"></lucide-angular>
+                Edit
+              </button>
+              <button (click)="openDeleteModal(user)"
+                class="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer">
+                <lucide-angular [name]="trash2" class="w-4 h-4"></lucide-angular>
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Updated Pagination -->
+  <div
+    class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg shadow">
+    <div class="flex-1 flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-700">
+          Showing <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+          to <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, totalItems) }}</span>
+          of <span class="font-medium">{{ totalItems }}</span> results
+        </p>
+      </div>
+      <div>
+        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+            class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50">
+            <span class="sr-only">Previous</span>
+            <lucide-angular [name]="left"></lucide-angular>
+          </button>
+
+          @for (page of getPageNumbers(); track page) {
+          <button (click)="goToPage(page)"
+            [class]="page === currentPage ? 
+                    'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600' :
+                    'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'">
+            {{ page }}
+          </button>
+          }
+
+          <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+            class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50">
+            <span class="sr-only">Next</span>
+            <lucide-angular [name]="right"></lucide-angular>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

@@ -1,0 +1,68 @@
+@if (isOpen) {
+<div id="deleteModalBackdrop"
+    class="fixed inset-0 bg-gray-700/50 bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
+    <div id="deleteModalContainer"
+        class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden border border-gray-200">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-300">
+            <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <lucide-angular [name]="warningIcon" class="text-red-500"></lucide-angular>
+                Confirm Deletion
+            </h2>
+            <button (click)="closeModal()" class="text-gray-400 hover:text-red-500 focus:outline-none">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-6 py-4">
+            <div class="mb-6">
+                <p class="text-red-600 font-medium">Are you sure you want to delete this product? This action cannot be
+                    undone.</p>
+            </div>
+
+            <!-- Product Details -->
+            <div class="bg-red-50 border-red-500 p-4 mb-6 rounded-xl">
+                <h3 class="font-medium text-gray-900 mb-2">Product Details:</h3>
+                <div class="grid grid-cols-1 gap-1 text-sm">
+                    <div>
+                        <span class="font-medium">Name:</span>
+                        <span class="ml-1">{{ product.productName }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Category:</span>
+                        <span class="ml-1">{{ product.productCategory }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Price:</span>
+                        <span class="ml-1">₹{{ product.productPrice | number: '1.2-2' }}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Stock:</span>
+                        <span class="ml-1">{{ product.productStock }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" (click)="closeModal()" [disabled]="isDeleting"
+                    class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-100 disabled:text-gray-400">
+                    Cancel
+                </button>
+                <button type="button" (click)="confirmDelete()" [disabled]="isDeleting"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 gap-3 disabled:bg-red-400">
+                    @if (isDeleting) {
+                    Deleting
+                    <lucide-angular [name]="loader" class="animate-spin"></lucide-angular>
+                    } @else {
+                    Delete Permanently
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}

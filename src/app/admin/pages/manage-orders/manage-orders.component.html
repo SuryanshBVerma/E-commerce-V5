@@ -1,0 +1,152 @@
+<div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Manage Orders</h1>
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <!-- Search Bar -->
+        <div class="relative w-full sm:w-64 lg:w-96">
+            <input type="text" [(ngModel)]="searchTerm" (input)="searchOrders()"
+                placeholder="Search by order ID or status..."
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+
+        <!-- Refresh Button -->
+        <button (click)="loadOrders()"
+            class="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2.5 rounded-lg font-medium transition-colors">
+            <lucide-angular [name]="refreshIcon" class="w-5 h-5"></lucide-angular>
+            Refresh
+        </button>
+    </div>
+
+    @if(isLoading) {
+    <!-- Shimmer UI Loading State -->
+    <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @for (item of [1,2,3,4,5]; track $index) {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="h-4 bg-gray-200 rounded-full animate-pulse w-16"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="h-4 bg-gray-200 rounded-full animate-pulse w-24"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="h-4 bg-gray-200 rounded-full animate-pulse w-16"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="h-6 bg-gray-200 rounded-full animate-pulse w-24"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="h-4 bg-gray-200 rounded-full animate-pulse w-24"></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <div class="flex justify-center gap-2">
+                            <div class="h-8 bg-gray-200 rounded-md animate-pulse w-16"></div>
+                            <div class="h-8 bg-gray-200 rounded-md animate-pulse w-16"></div>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    } @else {
+    <!-- Orders Table -->
+    <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @for (order of orders; track order.orderId) {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #{{order.orderId}}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex -space-x-2">
+                            @for (item of order.items.slice(0, 3); track item.productId) {
+                            <div class="flex items-center gap-2">
+                                <img [src]="item.productImageUrl || 'assets/default-product.png'"
+                                    class="h-8 w-8 rounded-full border-2 border-white object-cover"
+                                    [alt]="item.productName" [title]="item.productName">
+                                <p class="text-xs">{{item.productName}}</p>
+                            </div>
+                            }
+                            @if (order.items.length > 3) {
+                            <div
+                                class="h-8 w-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs">
+                                +{{order.items.length - 3}}
+                            </div>
+                            }
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ₹{{order.totalAmount | number:'1.2-2'}}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{getStatusColor(order.status)}}">
+                            {{order.status}}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{order.createdAt | date:'shortDate'}}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div class="flex justify-center gap-2">
+                            <select [(ngModel)]="order.status"
+                                    (change)="updateOrderStatus(order.orderId, order.status)"
+                                    class="rounded-md border-gray-300 py-1.5 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                @for (status of statusOptions; track status) {
+                                <option [value]="status">{{status}}</option>
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
